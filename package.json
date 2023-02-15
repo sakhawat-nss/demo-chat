@@ -1,0 +1,27 @@
+{
+  "name": "demo-chat",
+  "version": "1.0.0",
+  "description": "A client side chat app using standard WebSocket server",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sakhawat-nss/demo-chat.git"
+  },
+  "keywords": [
+    "chat",
+    "websocket"
+  ],
+  "author": "nijum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sakhawat-nss/demo-chat/issues"
+  },
+  "homepage": "https://github.com/sakhawat-nss/demo-chat#readme",
+  "dependencies": {
+    "ws": "^8.12.1"
+  }
+}

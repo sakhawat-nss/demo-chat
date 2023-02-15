@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        .main {
+            margin: 30px;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .messages .content {
+            display: flex;
+            flex-flow: row;
+            border-bottom: 1px solid #ccc !important;
+            padding-bottom: 5px;
+        }
+
+        .messages .content .user {
+            width: 15%;
+        }
+
+        .messages .content .message {
+            margin-left: 20px;
+        }
+
+        .text {
+            display: block;
+        }
+
+        .send {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="messages"></div>
+        <div>
+            <textarea class="text"></textarea>
+            <input type="button" class="send" value="Send Message">
+        </div>
+    </div>
+
+    <script defer>
+        let currentUserName = window.prompt("Please provide your name");
+        let socket = new WebSocket("ws://localhost:5000/wss");
+        socket.addEventListener("message", (event) => {
+            let data = JSON.parse(event.data);
+            let command = data.command;
+
+            switch (data.command) {
+                case "message":
+                    addNewMessage(data.data, data.userName);
+                    break;
+            }
+
+        });
+        socket.addEventListener("error", (event) => {
+            console.log(event);
+        });
+        socket.addEventListener("open", (event) => {
+            if (!currentUserName) return;
+
+            let data = {
+                command: "setName",
+                data: currentUserName,
+            }
+            socket.send(JSON.stringify(data));
+        });
+
+
+        document.querySelector(".send").addEventListener("click", () => {
+            let text = document.querySelector(".text").value;
+            let data = {
+                command: "message",
+                data: text,
+            }
+            socket.send(JSON.stringify(data));
+            document.querySelector(".text").value = "";
+        });
+        function addNewMessage(message, user) {
+            let messageElem = document.createElement('div');
+            messageElem.classList.add("message");
+            messageElem.textContent = message;
+
+            let userElm = document.createElement("div");
+            userElm.classList.add("user");
+            userElm.textContent = user;
+            userElm.style.backgroundColor = `hsl(${user.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0) % 360}, 100%, 50%)`;
+
+            let contentElm = document.createElement("div");
+            contentElm.classList.add("content");
+            contentElm.prepend(messageElem);
+            contentElm.prepend(userElm);
+
+            document.querySelector('.messages').append(contentElm);
+        }
+    </script>
+</body>
+
+</html>
